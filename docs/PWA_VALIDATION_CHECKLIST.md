@@ -1,81 +1,59 @@
 # PWA Validation Checklist (MVP)
 
-Ziel: Objektiv prüfen, ob die PWA-Umsetzung für den Alltag ausreicht.
+Ziel: Validieren, ob der lokale Screenshot-OCR-Workflow auf allen Zielgeräten praktikabel ist.
 
 ## 1) Testkontext
 
 - Testdatum:
 - Tester:
-- Build/Version:
-- Netzwerkprofil (z. B. Firmennetz, VPN, mobil):
+- Version/Build:
+- Browser:
+- Netzwerkprofil:
 
-## 2) Testgeräte
+## 2) Zielgeräte
 
-- Windows Arbeitsrechner (Browser + installierte PWA)
-- Privater Mac (Browser + installierte PWA)
+- Windows (Browser + installierte PWA)
+- macOS (Browser + installierte PWA)
 - iPhone (Safari + Home-Screen App)
 - iPad (Safari + Home-Screen App)
 
-## 3) Go/No-Go Kriterien
-
-Bewertung je Kriterium:
+## 3) Bewertungslogik
 
 - `PASS` = erfüllt
 - `PARTIAL` = teilweise erfüllt
 - `FAIL` = nicht erfüllt
 
-### 3.1 Performance
+## 4) Prüfpunkte
 
-- [ ] Startseite lädt in < 2 Sekunden (wiederholter Aufruf, Firmennetz) → Ergebnis: `PASS/PARTIAL/FAIL`
-- [ ] Sichtbarer First Content ist schnell da (subjektiv "sofort nutzbar") → Ergebnis: `PASS/PARTIAL/FAIL`
+### 4.1 Performance
 
-Messwerte notieren:
+- [ ] Startseite lädt in < 2 Sekunden → `PASS/PARTIAL/FAIL`
+- [ ] Analyse startet ohne spürbare UI-Hänger → `PASS/PARTIAL/FAIL`
 
-- Desktop Ladezeit:
-- iPhone Ladezeit:
-- iPad Ladezeit:
+### 4.2 Responsiveness
 
-### 3.2 Responsiveness
+- [ ] Keine Layout-Brüche auf iPhone/iPad → `PASS/PARTIAL/FAIL`
+- [ ] Kein horizontales Scrollen in Kernflows → `PASS/PARTIAL/FAIL`
 
-- [ ] Keine Layout-Brüche auf iPhone (Portrait) → Ergebnis: `PASS/PARTIAL/FAIL`
-- [ ] Keine Layout-Brüche auf iPad (Portrait/Landscape) → Ergebnis: `PASS/PARTIAL/FAIL`
-- [ ] Kein horizontales Scrollen in Kernansichten → Ergebnis: `PASS/PARTIAL/FAIL`
+### 4.3 Installierbarkeit
 
-### 3.3 Installierbarkeit
+- [ ] Als PWA auf Windows/macOS installierbar → `PASS/PARTIAL/FAIL`
+- [ ] Als Home-Screen-App auf iPhone/iPad nutzbar → `PASS/PARTIAL/FAIL`
 
-- [ ] App lässt sich unter Windows als PWA installieren und starten → Ergebnis: `PASS/PARTIAL/FAIL`
-- [ ] App lässt sich auf iPhone/iPad zum Home-Screen hinzufügen und starten → Ergebnis: `PASS/PARTIAL/FAIL`
-- [ ] App verhält sich im installierten Modus stabil (mehrfaches Öffnen/Schließen) → Ergebnis: `PASS/PARTIAL/FAIL`
+### 4.4 Workflow
 
-### 3.4 Alltags-UX
+- [ ] Import → Bestätigen → Analysieren funktioniert durchgängig → `PASS/PARTIAL/FAIL`
+- [ ] Terminliste ist nach Analyse sichtbar und plausibel → `PASS/PARTIAL/FAIL`
+- [ ] Daten bleiben nach Reload erhalten → `PASS/PARTIAL/FAIL`
 
-- [ ] Vorbereitungsstatus pro Termin in max. 1–2 Interaktionen änderbar → Ergebnis: `PASS/PARTIAL/FAIL`
-- [ ] Settings-Dialog in max. 1 Klick von der Startseite erreichbar → Ergebnis: `PASS/PARTIAL/FAIL`
-- [ ] M365 Account verbinden/trennen im Settings-Dialog funktioniert → Ergebnis: `PASS/PARTIAL/FAIL`
+### 4.5 Stabilität
 
-### 3.5 Stabilität (Session/Auth)
+- [ ] Keine Runtime-Fehler im Standardflow → `PASS/PARTIAL/FAIL`
+- [ ] Import entfernen setzt Zustand sauber zurück → `PASS/PARTIAL/FAIL`
 
-- [ ] Keine kritischen Login-/Token-Fehler im Tagesbetrieb → Ergebnis: `PASS/PARTIAL/FAIL`
-- [ ] Session bleibt bei normaler Nutzung stabil (keine unerwarteten Abmeldungen) → Ergebnis: `PASS/PARTIAL/FAIL`
-- [ ] Reconnect/Neuverbinden im Fehlerfall funktioniert → Ergebnis: `PASS/PARTIAL/FAIL`
-
-## 4) Ergebnislogik
-
-- **Go (PWA bleibt):** max. 1 Kriterium auf `PARTIAL`, kein `FAIL`.
-- **Review:** mehrere `PARTIAL`, aber kein harter Blocker.
-- **No-Go / Native Ergänzung prüfen:** 2 oder mehr `FAIL` oder 1 kritischer `FAIL` im Alltag.
-
-## 5) Offene Punkte & Maßnahmen
-
-- Offene Punkte:
-- Blocker:
-- Nächste Maßnahmen:
-- Verantwortlich:
-- Zieltermin:
-
-## 6) Abschlussentscheidung
+## 5) Ergebnis
 
 - Entscheidung: `GO` | `REVIEW` | `NO-GO`
 - Begründung:
-- Datum:
-- Freigabe durch:
+- Offene Punkte:
+- Nächste Maßnahmen:

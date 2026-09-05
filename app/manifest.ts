@@ -4,7 +4,7 @@ export default function manifest(): MetadataRoute.Manifest {
   return {
     name: "Management Dashboard",
     short_name: "MgmtDash",
-    description: "Persönliches Management Dashboard für Tagesplanung mit Microsoft 365.",
+    description: "Persönliches Management Dashboard mit Screenshot-Import und lokaler KI-Analyse.",
     start_url: "/",
     scope: "/",
     display: "standalone",

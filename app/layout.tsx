@@ -16,7 +16,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Management Dashboard",
-  description: "Persönliches Management Dashboard für Tagesplanung mit M365.",
+  description: "Persönliches Management Dashboard mit Screenshot-Import und lokaler KI-Analyse.",
   generator: `Management Dashboard ${APP_VERSION}`,
   manifest: "/manifest.webmanifest",
   applicationName: "Management Dashboard",

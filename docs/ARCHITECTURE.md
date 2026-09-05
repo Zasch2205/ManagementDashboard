@@ -1,161 +1,82 @@
 # Architekturkonzept
 
-## 1) Architekturziele
+## 1) Zielbild (MVP)
 
-- Plattformübergreifende Nutzung auf Windows, Mac, iPhone, iPad.
-- Zentrale Datenbasis in M365 ohne redundante Primärdatenhaltung.
-- Klare Trennung von UI, Business-Logik und Provider-Integration.
-- Erweiterbarkeit (weitere Datenquellen später möglich).
+Der aktuelle MVP ist bewusst lokal und unabhängig von externen Kontorechten:
 
-## 1.1) Architekturannahme für MVP
+- Eine PWA als Client
+- Screenshot als Input
+- Lokale OCR-/Parsing-Pipeline im Browser
+- Lokale Persistenz im Browser (`localStorage`)
 
-- Die PWA-Architektur ist eine Hypothese, die im MVP validiert wird.
-- Ziel ist, mit einer Codebasis alle Zielgeräte ausreichend gut zu bedienen.
-- Falls die Validierung fehlschlägt, bleibt die Domänenlogik bestehen und nur der Client-Ansatz wird angepasst.
-
-## 2) Zielarchitektur (MVP)
+## 2) Systemübersicht
 
 ```text
 [Browser / PWA]
       |
       v
-[Next.js App]
-  - UI Layer
-  - Domain Layer (Planungslogik)
-  - Data Provider Layer
+[Next.js UI]
+  - Import UI
+  - Analyse-Trigger
+  - Ergebnisliste
       |
       v
-[Microsoft Graph API]
-  - Calendar Events
-  - Event Extensions (prep status)
+[Lokale Pipeline]
+  - Bildvorverarbeitung (Canvas)
+  - OCR (tesseract.js)
+  - Termin-Parser (Hybrid)
+      |
+      v
+[localStorage]
+  - letzter Screenshot
+  - Dateiname
+  - erkannte Termine
 ```
 
-## 3) Komponenten
+## 3) Pipeline-Logik
 
-- `UI Layer`
-  - React-Komponenten, responsive Layouts, Statusaktionen.
-- `Domain Layer`
-  - Regeln wie Priorisierung, "Heute vorbereiten", Fristenlogik.
-- `Provider Layer`
-  - M365-Adapter für Lesen/Schreiben von Terminen und Metadaten.
-- `Auth Layer`
-  - Entra ID Login, Token-Handling, Session-Schutz.
-- `Settings Layer`
-  - Einstellungen für Account-Verknüpfung, Anzeigeoptionen und Filter-Defaults.
+1. **Import**: Nutzer lädt Screenshot hoch.
+2. **Bestätigung**: Import wird als aktive Datenbasis markiert.
+3. **Vorverarbeitung**: Upscaling + Kontrast + Binarisierung.
+4. **OCR**: Texterkennung mit `deu+eng`.
+5. **Event Parsing (Hybrid)**:
+   - Primär: visuelle Segmentierung über blaue vertikale Linien.
+   - Fallback: zeitankerbasierte Gruppierung aus OCR-Zeilen.
+6. **Output**: strukturierte Terminliste mit Confidence.
 
-## 4) Datenmodell (fachlich)
+## 4) Datenmodell (lokal)
 
-### Termin
+### Event
 
-- `event_id` (aus Outlook/Graph)
+- `id`
 - `title`
-- `start_at`
-- `end_at`
-- `attendees`
-- `location`
+- `startTime`
+- `endTime` (optional)
+- `details: string[]`
+- `confidence`
 
-### Vorbereitung (pro Termin)
+### Persistierte Schlüssel
 
-- `prep_status`: `offen | in_arbeit | vorbereitet`
-- `prep_due_at`: optional
-- `prep_notes`: optional
-- `updated_at`
+- `management-dashboard.calendar-screenshot`
+- `management-dashboard.calendar-screenshot.name`
+- `management-dashboard.calendar-screenshot.events`
 
-### Benutzereinstellungen
+## 5) Stärken und Grenzen
 
-- `account_connection_status`: `connected | disconnected | error`
-- `default_calendar_id`: optional
-- `default_filters`: optional (z. B. nur offene Vorbereitung)
-- `theme`: `system | light | dark`
+### Stärken
 
-## 5) Speicherstrategie (ohne eigene DB)
+- Sofort testbar ohne Admin-/Tenant-Abhängigkeit
+- Schnelle Iteration am OCR- und UX-Workflow
+- Keine Serverinfrastruktur im MVP nötig
 
-MVP-Entscheidung:
+### Grenzen
 
-- Vorbereitungsdaten werden als Event-Metadaten in M365 gespeichert.
-- Variante A (einfach): Outlook-Kategorien für Status.
-- Variante B (empfohlen): Graph Event Extensions für strukturierte Felder.
+- Daten nur lokal auf einem Gerät/Browser
+- OCR-Qualität abhängig von Screenshot-Qualität
+- Noch keine manuelle Korrektur oder serverseitiger Sync
 
-Vorteile:
+## 6) Weiterentwicklung
 
-- Keine zusätzliche Infrastruktur im MVP.
-- Daten sind zentral, geräteübergreifend und nah an den Terminen.
-
-Grenzen:
-
-- Komplexe Auswertungen/Historien sind eingeschränkt.
-- Für Analytics/Teamfeatures später ggf. zusätzliche DB.
-
-## 6) Sicherheits- und Compliance-Bausteine
-
-- Authentifizierung ausschließlich via Firmen-SSO.
-- Nur minimal notwendige Graph-Berechtigungen.
-- Kein Export sensibler Daten in Fremdsysteme im MVP.
-- Optional: Audit-Logging für Statusänderungen.
-
-## 7) Settings-Dialog (Pflichtfunktion)
-
-Der Settings-Dialog ist ein fester Bestandteil des MVP.
-
-- Bereich `M365 Account`
-  - aktueller Verbindungsstatus
-  - Aktion `verbinden/neu verbinden`
-  - Aktion `trennen`
-- Bereich `Kalender`
-  - Auswahl Standardkalender
-  - Option „nur Termine mit Teilnahme = zugesagt"
-- Bereich `Darstellung`
-  - Theme-Wahl und Startseiten-Defaultfilter
-
-Technisch:
-
-- Verbindung über Entra ID OAuth-Flow.
-- Session/Refresh-Handling serverseitig abgesichert.
-- Einstellungen im MVP ohne eigene Datenbank: entweder als M365-gebundene Preferences oder als lokale Geräte-Defaults; finale Entscheidung im Implementierungsstart.
-
-## 8) Technologievorschlag
-
-- Frontend/Backend: Next.js + TypeScript
-- UI: Tailwind CSS + komponentenbasierte UI-Library
-- API-Integration: Microsoft Graph SDK / REST
-- Deployment: z. B. Azure Static Web Apps oder Vercel (abhängig von IT-Richtlinien)
-
-## 9) Erweiterbarkeit
-
-Das Provider-Prinzip erlaubt später zusätzliche Quellen:
-
-- `M365Provider` (MVP)
-- `NextcloudProvider` (optional später)
-
-Schnittstelle (Beispiel):
-
-```ts
-interface CalendarProvider {
-  listEvents(range: { from: string; to: string }): Promise<Event[]>;
-  updatePrepState(eventId: string, prep: PrepState): Promise<void>;
-}
-```
-
-## 10) Umsetzungsreihenfolge
-
-1. Projekt-Setup (Next.js, Auth-Gerüst, Basislayout)
-2. Settings-Dialog (Account verbinden/trennen, Defaults)
-3. M365 Login + Terminauslese
-4. Prep-Status lesen/schreiben
-5. Startseitenlogik (Heute, offen, priorisiert)
-6. Mobile UX und PWA-Finishing
-7. PWA-Eignung messen und Architekturentscheidung bestätigen
-
-## 11) PWA-Validierungskriterien (Go/No-Go)
-
-Die PWA gilt als ausreichend, wenn folgende Punkte im MVP erfüllt sind:
-
-- **Performance**: Startseite lädt in < 2s (Firmennetz, wiederholter Aufruf).
-- **Responsiveness**: Bedienung auf iPhone/iPad ohne Layout-Brüche und ohne horizontales Scrollen.
-- **Installierbarkeit**: App lässt sich auf iOS, iPadOS, macOS und Windows sinnvoll als App starten.
-- **Alltags-UX**: Statusänderung pro Termin in max. 1–2 Interaktionen.
-- **Stabilität**: Keine blocker-kritischen Session- oder Refresh-Probleme im Tagesbetrieb.
-
-Wenn 2 oder mehr Kriterien nicht erfüllt sind:
-
-- Entscheidungspfad starten für native Ergänzung (z. B. mobile Shell oder gezielte Native-App).
+- Terminliste editierbar machen (Korrekturmodus)
+- Vorbereitungsstatus pro Termin ergänzen
+- Optional serverseitige Persistenz für Multi-Device-Sync
