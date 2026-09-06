@@ -1,13 +1,11 @@
 # Architekturkonzept
 
-## 1) Zielbild (MVP)
+## 1) Zielbild
 
-Der aktuelle MVP ist bewusst lokal und unabhängig von externen Kontorechten:
+Der MVP nutzt eine zweistufige Datenstrategie:
 
-- Eine PWA als Client
-- Screenshot als Input
-- Lokale OCR-/Parsing-Pipeline im Browser
-- Lokale Persistenz im Browser (`localStorage`)
+- **Hauptweg:** automatische/halbautomatische Kalenderübergabe über Nextcloud (`.ics`)
+- **Havarieweg:** Screenshot-Import mit lokaler OCR
 
 ## 2) Systemübersicht
 
@@ -16,67 +14,66 @@ Der aktuelle MVP ist bewusst lokal und unabhängig von externen Kontorechten:
       |
       v
 [Next.js UI]
-  - Import UI
-  - Analyse-Trigger
-  - Ergebnisliste
+  - Sync-Button
+  - Terminliste (Test: 7. September)
+  - Screenshot-Fallback
       |
       v
-[Lokale Pipeline]
-  - Bildvorverarbeitung (Canvas)
-  - OCR (tesseract.js)
-  - Termin-Parser (Hybrid)
+[Next.js API Route]
+  - Nextcloud WebDAV PROPFIND
+  - ICS-Datei laden
+  - ICS parsen
       |
       v
-[localStorage]
-  - letzter Screenshot
-  - Dateiname
-  - erkannte Termine
+[Nextcloud Public Share]
+  - calendar.ics
 ```
 
-## 3) Pipeline-Logik
+## 3) Hauptweg: Nextcloud-Sync
 
-1. **Import**: Nutzer lädt Screenshot hoch.
-2. **Bestätigung**: Import wird als aktive Datenbasis markiert.
-3. **Vorverarbeitung**: Upscaling + Kontrast + Binarisierung.
-4. **OCR**: Texterkennung mit `deu+eng`.
-5. **Event Parsing (Hybrid)**:
-   - Primär: visuelle Segmentierung über blaue vertikale Linien.
-   - Fallback: zeitankerbasierte Gruppierung aus OCR-Zeilen.
-6. **Output**: strukturierte Terminliste mit Confidence.
+1. UI ruft `GET /api/sync/nextcloud` auf.
+2. API liest Share-Verzeichnis via WebDAV (`PROPFIND`).
+3. API identifiziert `.ics`-Datei und deren `last modified`.
+4. API lädt die `.ics` und parst `VEVENT`-Einträge.
+5. UI zeigt `Synchronisationsdatum` + gefilterte Terminliste.
 
-## 4) Datenmodell (lokal)
+## 4) Havarieweg: Screenshot
 
-### Event
+Wenn der Nextcloud-Sync fehlschlägt:
+
+- lokaler Screenshot-Import
+- lokale OCR-/Parser-Analyse
+- Ergebnisliste im Browser
+
+## 5) Datenmodell
+
+### Kalenderereignis
 
 - `id`
 - `title`
-- `startTime`
-- `endTime` (optional)
-- `details: string[]`
-- `confidence`
+- `location` (optional)
+- `startIso`
+- `endIso` (optional)
 
-### Persistierte Schlüssel
+### Sync-Metadaten
 
-- `management-dashboard.calendar-screenshot`
-- `management-dashboard.calendar-screenshot.name`
-- `management-dashboard.calendar-screenshot.events`
+- `sourceFileName`
+- `synchronizationDate`
+- `events[]`
 
-## 5) Stärken und Grenzen
+## 6) Konfiguration
 
-### Stärken
+- `NEXTCLOUD_SHARE_URL` (optional)
+  - Format: `https://<host>/s/<token>`
 
-- Sofort testbar ohne Admin-/Tenant-Abhängigkeit
-- Schnelle Iteration am OCR- und UX-Workflow
-- Keine Serverinfrastruktur im MVP nötig
+## 7) Grenzen im MVP
 
-### Grenzen
+- Keine serverseitige Datenbank
+- Testansicht aktuell auf `7. September` gefiltert
+- Noch keine automatische periodische Hintergrund-Synchronisation in der App
 
-- Daten nur lokal auf einem Gerät/Browser
-- OCR-Qualität abhängig von Screenshot-Qualität
-- Noch keine manuelle Korrektur oder serverseitiger Sync
+## 8) Nächste Schritte
 
-## 6) Weiterentwicklung
-
-- Terminliste editierbar machen (Korrekturmodus)
-- Vorbereitungsstatus pro Termin ergänzen
-- Optional serverseitige Persistenz für Multi-Device-Sync
+- Tägliche Sync-Strategie (Task/Trigger)
+- Editierbare Terminliste
+- Persistenz für Multi-Device-Sync

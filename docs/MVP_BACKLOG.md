@@ -1,68 +1,53 @@
 # MVP Backlog
 
-Ziel: Lokal testbarer PWA-MVP mit Screenshot-zu-Terminliste-Workflow.
+Ziel: Stabiler Nextcloud-ICS-Workflow mit Screenshot-Fallback.
 
-## Priorisierung
+## P0 — Muss
 
-- `P0` = Muss im aktuellen MVP
-- `P1` = Nächster Ausbau
+### P0-01 Nextcloud-Sync (Hauptweg)
 
-## P0 — Aktueller Scope
+- API-Route für WebDAV Share-Zugriff
+- `.ics`-Datei finden und laden
+- Terminobjekte aus `VEVENT` parsen
 
-### P0-01 PWA-Grundgerüst
+### P0-02 Sync-UI
 
-- Next.js + TypeScript + Tailwind
-- Manifest + Service Worker + Offline-Fallback
+- `Jetzt synchronisieren`-Button
+- Anzeige von Quell-Datei und Synchronisationsdatum
+- Anzeige der Terminmengen
 
-### P0-02 Import-Workflow
+### P0-03 Testdarstellung
 
-- Screenshot auswählen
-- Dateivalidierung
-- Import bestätigen
-- Import entfernen
+- Termine vom 7. September anzeigen
+- Zeit + Titel + Ort darstellen
 
-### P0-03 OCR-Pipeline
+### P0-04 Havarieweg erhalten
 
-- Bildvorverarbeitung (Kontrast/Binarisierung)
-- OCR via `tesseract.js` (`deu+eng`)
-- Confidence-Ermittlung
+- Screenshot-Import bleibt funktionsfähig
+- OCR-Liste weiterhin nutzbar
 
-### P0-04 Termin-Parser
+### P0-05 Qualität
 
-- Zeit-/Range-Erkennung
-- Mehrzeilige Titel zusammenführen
-- Metadaten von Titeln trennen
-- Microsoft-Teams-Rauschtext entfernen
+- Lint/Build fehlerfrei
+- klare Fehlerzustände im Sync
 
-### P0-05 Hybrid-Segmentierung
+## P1 — Danach
 
-- Primär über blaue vertikale Linien
-- Fallback über Zeitanker
+### P1-01 Regelmäßiger Sync
 
-### P0-06 Lokale Persistenz
+- täglicher Sync-Prozess definieren (extern getriggert)
 
-- Screenshot + Dateiname speichern
-- erkannte Termine speichern
-- Wiederherstellung nach Reload
+### P1-02 Editierbare Termine
 
-## P1 — Nächste Schritte
+- manuelle Korrektur in der Liste
 
-### P1-01 Korrekturmodus
+### P1-03 Persistenz
 
-- erkannte Termine editieren/löschen/zusammenführen
+- serverseitige Speicherung für Multi-Device
 
-### P1-02 Vorbereitungsstatus
+## Definition of Done
 
-- `offen | in_arbeit | vorbereitet` pro Termin
-
-### P1-03 Export/Sync
-
-- optionaler Export (JSON/CSV)
-- optional serverseitige Persistenz
-
-## Definition of Done (MVP)
-
-- Voller lokaler Workflow läuft stabil
-- OCR erzeugt eine nutzbare Terminliste
-- Daten bleiben nach Reload erhalten
-- App läuft auf Desktop und Mobile
+- Hauptweg lädt `.ics` erfolgreich
+- Synchronisationsdatum wird angezeigt
+- 7.-September-Testliste ist sichtbar
+- Havarieweg ist intakt

@@ -1,59 +1,39 @@
 # PWA Validation Checklist (MVP)
 
-Ziel: Validieren, ob der lokale Screenshot-OCR-Workflow auf allen Zielgeräten praktikabel ist.
+Ziel: Prüfen, ob der Nextcloud-ICS-Hauptweg im Alltag stabil ist.
 
 ## 1) Testkontext
 
 - Testdatum:
 - Tester:
 - Version/Build:
-- Browser:
-- Netzwerkprofil:
+- Gerät/Browser:
 
-## 2) Zielgeräte
+## 2) Prüfpunkte
 
-- Windows (Browser + installierte PWA)
-- macOS (Browser + installierte PWA)
-- iPhone (Safari + Home-Screen App)
-- iPad (Safari + Home-Screen App)
+### 2.1 Sync-Hauptweg
 
-## 3) Bewertungslogik
+- [ ] `Jetzt synchronisieren` lädt Daten erfolgreich (`PASS/PARTIAL/FAIL`)
+- [ ] Synchronisationsdatum wird angezeigt (`PASS/PARTIAL/FAIL`)
+- [ ] Quell-Dateiname wird angezeigt (`PASS/PARTIAL/FAIL`)
 
-- `PASS` = erfüllt
-- `PARTIAL` = teilweise erfüllt
-- `FAIL` = nicht erfüllt
+### 2.2 Testliste
 
-## 4) Prüfpunkte
+- [ ] Termine vom 7. September werden dargestellt (`PASS/PARTIAL/FAIL`)
+- [ ] Zeit, Titel und Ort sind plausibel (`PASS/PARTIAL/FAIL`)
 
-### 4.1 Performance
+### 2.3 Fehlerhandling
 
-- [ ] Startseite lädt in < 2 Sekunden → `PASS/PARTIAL/FAIL`
-- [ ] Analyse startet ohne spürbare UI-Hänger → `PASS/PARTIAL/FAIL`
+- [ ] Fehlermeldung bei nicht erreichbarem Share ist verständlich (`PASS/PARTIAL/FAIL`)
+- [ ] Screenshot-Havarieweg ist weiterhin nutzbar (`PASS/PARTIAL/FAIL`)
 
-### 4.2 Responsiveness
+### 2.4 Plattform
 
-- [ ] Keine Layout-Brüche auf iPhone/iPad → `PASS/PARTIAL/FAIL`
-- [ ] Kein horizontales Scrollen in Kernflows → `PASS/PARTIAL/FAIL`
+- [ ] Seite funktioniert auf Desktop und Mobile (`PASS/PARTIAL/FAIL`)
+- [ ] PWA ist installierbar (`PASS/PARTIAL/FAIL`)
 
-### 4.3 Installierbarkeit
-
-- [ ] Als PWA auf Windows/macOS installierbar → `PASS/PARTIAL/FAIL`
-- [ ] Als Home-Screen-App auf iPhone/iPad nutzbar → `PASS/PARTIAL/FAIL`
-
-### 4.4 Workflow
-
-- [ ] Import → Bestätigen → Analysieren funktioniert durchgängig → `PASS/PARTIAL/FAIL`
-- [ ] Terminliste ist nach Analyse sichtbar und plausibel → `PASS/PARTIAL/FAIL`
-- [ ] Daten bleiben nach Reload erhalten → `PASS/PARTIAL/FAIL`
-
-### 4.5 Stabilität
-
-- [ ] Keine Runtime-Fehler im Standardflow → `PASS/PARTIAL/FAIL`
-- [ ] Import entfernen setzt Zustand sauber zurück → `PASS/PARTIAL/FAIL`
-
-## 5) Ergebnis
+## 3) Ergebnis
 
 - Entscheidung: `GO` | `REVIEW` | `NO-GO`
 - Begründung:
 - Offene Punkte:
-- Nächste Maßnahmen:

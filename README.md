@@ -6,29 +6,23 @@ Persönliches, plattformübergreifendes Dashboard zur Tagesorganisation als PWA.
 
 - Version: `0.0.1`
 - Build: `1`
-- Betriebsmodus: `lokaler MVP`
-- Datenbasis: `Kalender-Screenshot`
+- Hauptweg: `Nextcloud ICS-Synchronisation`
+- Havarieweg: `Screenshot-Import + lokale OCR`
 
-## MVP-Ziel
+## Aktueller Workflow
 
-Der MVP validiert den Kernworkflow ohne externe Abhängigkeiten:
+1. `Jetzt synchronisieren` lädt die `.ics` aus dem geteilten Nextcloud-Ordner.
+2. Die App zeigt das `Synchronisationsdatum` (aus Dateimetadaten).
+3. Für den Test werden Termine vom `7. September` dargestellt.
+4. Falls der Sync fehlschlägt, kann der Screenshot-Havarieweg genutzt werden.
 
-1. Kalender-Screenshot importieren
-2. Import bestätigen
-3. Lokale KI/OCR-Analyse starten
-4. Erkannte Termine prüfen
+## Features im MVP
 
-## Umgesetzte Funktionen
-
-- Screenshot-Import mit Dateivalidierung
-- Bestätigen-Schritt vor Analyse
-- Lokale OCR mit `tesseract.js`
-- Bildvorverarbeitung (Upscaling, Kontrast, Binarisierung)
-- Hybrid-Erkennung:
-  - visuelle Segmentierung über blaue Kalenderlinien
-  - Fallback über Zeitanker im OCR-Text
-- Terminliste mit Start-/Endzeit, Titel, Details und Confidence
-- Lokale Persistenz in `localStorage`
+- Nextcloud-Sync über Public-Share/WebDAV (serverseitig in Next.js)
+- ICS-Parsing (`VEVENT`, Zeit, Titel, Ort)
+- Testfilter auf Termine am 7. September
+- Synchronisationsmetadaten in der UI
+- Screenshot-Import als Fallback
 - PWA-Basis (Manifest, Service Worker, Offline-Fallback)
 
 ## Lokaler Start
@@ -37,17 +31,18 @@ Der MVP validiert den Kernworkflow ohne externe Abhängigkeiten:
 - Dev-Server starten: `npm run dev`
 - App öffnen: `http://localhost:3000`
 
-## Projektstruktur
+## Konfiguration
 
-- App-Einstieg: `app/page.tsx`
-- Import + OCR-Workflow: `components/calendar-screenshot-import.tsx`
+Optional kann der Nextcloud-Share per Environment gesetzt werden:
+
+- `NEXTCLOUD_SHARE_URL=https://.../s/<token>`
+
+Wenn nicht gesetzt, nutzt die App den aktuell hinterlegten Share-Link.
+
+## Wichtige Dateien
+
+- Startseite: `app/page.tsx`
+- Nextcloud-Sync API: `app/api/sync/nextcloud/route.ts`
+- Sync-UI: `components/sync/nextcloud-calendar-sync.tsx`
+- Screenshot-Havarieweg: `components/calendar-screenshot-import.tsx`
 - Architektur: `docs/ARCHITECTURE.md`
-- UI-Konzept: `docs/UI_STARTSEITE.md`
-- MVP-Backlog: `docs/MVP_BACKLOG.md`
-- PWA-Checkliste: `docs/PWA_VALIDATION_CHECKLIST.md`
-
-## Nächste sinnvolle Schritte
-
-- Manuelle Korrektur erkannter Termine (Edit/Delete/Merge)
-- Vorbereitungstatus pro erkanntem Termin
-- Optional später: serverseitige Persistenz für Multi-Device-Sync
